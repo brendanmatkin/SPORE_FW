@@ -33,9 +33,11 @@ void setup() {
   timer=millis();
   x=0;
   y=0;
+  
+  // these multicast OSC
   sendBrightness(1.0f);
   sendSendRate(3.0f);
-  
+  sendChangeServer(10, 0, 1, 69);
 }
 
 
@@ -56,7 +58,8 @@ void draw() {
 
 void mousePressed() {
   if (mouseButton == LEFT) sendBrightness(map(mouseY, 0, height, 1.0f, 0.0f));
-  if (mouseButton == RIGHT) sendSendRate(map(mouseX, 0, width, 0.0f, 30.0f));
+  else if (mouseButton == RIGHT) sendSendRate(map(mouseX, 0, width, 0.0f, 30.0f));
+  else sendChangeServer(10, 0, 1, 69);    // middle button
 }
 
 void sendBrightness(float val) {
@@ -70,6 +73,15 @@ void sendSendRate(float val) {
   OscMessage m = new OscMessage("/sendRate");
   m.add(val);
   oscMult.send(m);
+}
+
+void sendChangeServer(int o1, int o2, int o3, int o4) {
+  OscMessage m = new OscMessage("/changeServer");
+    m.add(o1);
+    m.add(o2);
+    m.add(o3);
+    m.add(o4);
+    oscMult.send(m);
 }
 
 

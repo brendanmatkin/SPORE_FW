@@ -175,6 +175,7 @@ void loop() {
         inMsg.route("/sendRate", setSendRate);
         inMsg.route("/brightness", setBrightness);
         inMsg.route("/mode", setMode);
+        inMsg.route("/changeServer", changeServer);
       }
     }
   //}
