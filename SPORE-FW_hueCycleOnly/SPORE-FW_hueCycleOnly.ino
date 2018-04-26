@@ -1,4 +1,4 @@
-#define FASTLED_INTERRUPT_RETRY_COUNT 0
+#define FASTLED_INTERRUPT_RETRY_COUNT 1
 #include "FastLED.h"
 
 #define NUM_LEDS 16
