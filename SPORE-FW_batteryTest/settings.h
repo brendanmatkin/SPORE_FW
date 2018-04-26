@@ -9,7 +9,7 @@
 
 
 const bool SERIAL_DEBUG = true;               // enabling this will disable the LEDDAR and vice versa
-const bool ENABLE_WEBSOCKET = false;          // 
+const bool ENABLE_WEBSOCKET = true;          // 
 
 
 /* -- firmware settings -- */
@@ -35,7 +35,7 @@ const char* password = "nosotros";
 //IPAddress subnet(255, 255, 255, 0);           // subnet (for static)
 IPAddress serverIP(10,0,1,100);               // mbp-bm
 uint16_t localPort_OSC = 8889;                // OSC listen port
-uint16_t remotePort_OSC = 5005;               // OSC send port (this sends to the server now) // was 8888
+uint16_t remotePort_OSC = 8888;               // OSC send port (this sends to the server now) // was 8888
 IPAddress mIP(239, 0, 1, 1);                  // multicast ip address
 uint16_t mPort = 7777;                        // multicast port
 uint16_t wsPort = 8080;                       // websocket port

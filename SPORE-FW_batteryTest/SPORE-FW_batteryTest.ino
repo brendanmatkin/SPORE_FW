@@ -1,4 +1,8 @@
-// esp8266 2.4.1-rc2
+// esp8266 2.4.0-rc2
+
+extern "C" {
+  #include "user_interface.h"
+}
 
 #include "settings.h"
 #include "comm_ws.h"
@@ -24,6 +28,8 @@ float hue;
 
 
 void setup() {
+  wifi_set_sleep_type(NONE_SLEEP_T);
+  
   Serial.begin(115200);
   Serial.printf("\n");
   delay(500);
@@ -34,12 +40,12 @@ void setup() {
   Serial.flush();
 
   /* begin SPIFFS */
-  //  Serial.print("Mounting file system...");
-  //  if (!SPIFFS.begin()) {
-  //    Serial.println("Failed to mount file system");
-  //    return;
-  //  }
-  //  Serial.println(" mounted.");
+    Serial.print("Mounting file system...");
+    if (!SPIFFS.begin()) {
+      Serial.println("Failed to mount file system");
+      return;
+    }
+    Serial.println(" mounted.");
 
   /* init LED PIN */
   pinMode(LED_BUILTIN, OUTPUT);
@@ -72,6 +78,7 @@ void loop() {
     udpSend.endPacket();
     pingTimer = millis();
   }
+  yield();
 
 
   /**** HARDWARE check for firmware update (server): ****/
@@ -119,17 +126,24 @@ void loop() {
     lastUpdate = millis();
     hue = (hue == 1000.0f) ? 0.0f : (hue += 1.0f);
   }
+  yield();
 
 
   /* battery voltage: */
-  float vRaw = analogRead(A0) / 1023.0f * 4.03f;  // ideally *4.2f. 4.03 is the max measurable by current voltage divider. May vary with resistor tolerance..
+  static float vRaw;
+  static uint32_t analogReadTimer;
+  if (millis() - analogReadTimer > 200) {       // 200 = 5 per second. can't analogRead too fast or wifi disconnects. 
+    vRaw = analogRead(A0);
+    vRaw = vRaw / 1023.0f * 4.03f;              // ideally *4.2f. 4.03 is the max measurable by current voltage divider. May vary with resistor tolerance..
+    delay(3);                                   // this delay HAS to be here. No Flickers! (Thanks to DMA)
+  }
   float coef = 0.1;
   sensorState.voltage = vRaw * coef + (1.0f - coef) * sensorState.voltage;
   //Serial.println(sensorState.voltage);
 
 
   /* OSC: */
-  if (WiFi.isConnected()) {
+  //if (WiFi.isConnected()) {
     /**** OSC out ****/
     if (millis() - sendTimer > (1000.0f/sensorState.sendRate)) {
       //String _oscAddress = oscAddress + "/dist";
@@ -155,14 +169,15 @@ void loop() {
       //if (SERIAL_DEBUG) Serial.printf("[UDP] Got UDP: %i\n", udpSize);      // DELETE ME
       while (udpSize--) {
         inMsg.fill(udp.read());
+        yield();
       }
       if (!inMsg.hasError()) {
-        //inMsg.route("/sendRate", setSendRate);
+        inMsg.route("/sendRate", setSendRate);
         inMsg.route("/brightness", setBrightness);
         inMsg.route("/mode", setMode);
       }
     }
-  }
+  //}
 
   yield();
 }

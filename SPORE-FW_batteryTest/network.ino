@@ -4,7 +4,6 @@ void networkInit() {
   Serial.print(ssid);
   WiFi.persistent(false);                   // don't re-write ssid/password to flash every time (avoid degredation)
   WiFi.mode(WIFI_STA);                      //
-  //WiFi.setSleepMode(WIFI_NONE_SLEEP);       // BRICKS OTA?? or line 282??   // disable auto modem-sleep
   WiFi.hostname(deviceName);                // DHCP Hostname
   WiFi.begin(ssid, password);               // connect to WiFi
 
